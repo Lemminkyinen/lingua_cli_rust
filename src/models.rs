@@ -2,13 +2,13 @@ use console::style;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
+use super::file_io::get_traditional_pinyin;
+
 #[derive(Serialize, Deserialize)]
 pub(super) struct BaseModel {
     pub(super) traditional: Box<[Box<str>]>,
     pub(super) simplified: Box<[Box<str>]>,
     pub(super) english: Box<[Box<str>]>,
-    pub(super) pinyin: Box<[Box<str>]>,
-
     // extra
     pub(super) type_: Option<String>,
     pub(super) english_synonym: Option<Box<[String]>>,
@@ -19,8 +19,20 @@ pub(super) struct BaseModel {
 }
 
 impl BaseModel {
+    fn pinyin(&self) -> Vec<String> {
+        self.traditional
+            .iter()
+            .map(|w| {
+                w.chars()
+                    .filter_map(get_traditional_pinyin)
+                    .collect::<Vec<String>>()
+                    .join(" ")
+            })
+            .collect::<Vec<_>>()
+    }
+
     fn pinyin_alphabet(&self) -> Vec<String> {
-        self.pinyin
+        self.pinyin()
             .iter()
             .map(|w| {
                 w.chars()
@@ -39,7 +51,7 @@ impl BaseModel {
     }
 
     fn styled_pinyin(&self) -> String {
-        self.pinyin
+        self.pinyin()
             .iter()
             .map(|word| style(word).cyan().to_string())
             .collect::<Vec<_>>()
@@ -136,7 +148,6 @@ pub(super) fn get_base_model() -> BaseModel {
             traditional: Box::new(["你好".into()]),
             simplified: Box::new(["你好".into()]),
             english: Box::new(["hello".into()]),
-            pinyin: Box::new(["nǐ hǎo".into()]),
             description: None,
             tones: None,
             type_: None,
@@ -149,7 +160,6 @@ pub(super) fn get_base_model() -> BaseModel {
             traditional: Box::new(["我愛你".into()]),
             simplified: Box::new(["我爱你".into()]),
             english: Box::new(["I love you".into()]),
-            pinyin: Box::new(["wǒ ài nǐ".into()]),
             description: None,
             tones: None,
             type_: None,

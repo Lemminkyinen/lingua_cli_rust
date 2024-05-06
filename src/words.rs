@@ -1,10 +1,8 @@
+use super::models::get_base_model;
+use super::utils::StyledWrite;
 use anyhow::Error;
 use console::Term;
 use rand::random;
-
-use crate::utils::StyledWrite;
-
-use super::models::get_base_model;
 
 pub(super) struct Words {}
 

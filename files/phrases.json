@@ -1,0 +1,54 @@
+[
+    {
+        "traditional": [
+            "你好"
+        ],
+        "simplified": [
+            "你好"
+        ],
+        "english": [
+            "hello"
+        ],
+        "pinyin": [
+            "nǐ hǎo"
+        ],
+        "type_": null,
+        "english_synonym": [
+            "hi"
+        ],
+        "chinese_synonym": [
+            "你好"
+        ],
+        "description": null,
+        "tones": null,
+        "notes": [
+            "This is a very common greeting."
+        ]
+    },
+    {
+        "traditional": [
+            "我愛你"
+        ],
+        "simplified": [
+            "我爱你"
+        ],
+        "english": [
+            "I love you"
+        ],
+        "pinyin": [
+            "wǒ ài nǐ"
+        ],
+        "type_": null,
+        "english_synonym": [
+            "I adore you"
+        ],
+        "chinese_synonym": [
+            "我喜欢你"
+        ],
+        "description": null,
+        "tones": null,
+        "notes": [
+            "This is a very common phrase."
+        ]
+    }
+]

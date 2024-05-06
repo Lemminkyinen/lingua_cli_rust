@@ -3,12 +3,18 @@ mod models;
 mod utils;
 mod words;
 
+use crate::file_io::read_dict;
+use crate::models::DictObject;
 use anyhow::Error;
 use console::style;
 use console::Term;
-use models::get_base_model;
+use lazy_static::lazy_static;
 use std::io::Write;
 use words::Words;
+
+lazy_static! {
+    static ref DICTIONARY: Box<[DictObject]> = read_dict().expect("Failed to read dictionary");
+}
 
 fn start_text() -> String {
     let welcome = style("Welcome to LinguaCLI!\n\n").bold();
@@ -65,6 +71,9 @@ fn main() -> Result<(), Error> {
     let mut terminal = Term::stdout();
 
     terminal.write(start_text().as_bytes())?;
+
+    // Load the dictionary into memory. In release mode it took about 50 ms
+    let _ = &DICTIONARY[0];
 
     '_main: loop {
         let input = terminal.read_line()?;

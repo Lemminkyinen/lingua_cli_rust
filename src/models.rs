@@ -155,7 +155,7 @@ pub(super) fn get_base_model() -> BaseModel {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub(super) struct DictObject {
     pub(super) traditional: Box<str>,
     pub(super) simplified: Box<str>,

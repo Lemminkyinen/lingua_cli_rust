@@ -10,11 +10,6 @@ pub(super) struct BaseModel {
     pub(super) simplified: Box<[Box<str>]>,
     pub(super) english: Box<[Box<str>]>,
     // extra
-    pub(super) type_: Option<String>,
-    pub(super) english_synonym: Option<Box<[String]>>,
-    pub(super) chinese_synonym: Option<Box<[String]>>,
-    pub(super) description: Option<Box<[String]>>,
-    pub(super) tones: Option<Box<[String]>>,
     pub(super) notes: Option<Box<[String]>>,
 }
 
@@ -148,11 +143,6 @@ pub(super) fn get_base_model() -> BaseModel {
             traditional: Box::new(["你好".into()]),
             simplified: Box::new(["你好".into()]),
             english: Box::new(["hello".into()]),
-            description: None,
-            tones: None,
-            type_: None,
-            english_synonym: Some(Box::new(["hi".to_string()])),
-            chinese_synonym: Some(Box::new(["你好".to_string()])),
             notes: Some(Box::new(["This is a very common greeting.".to_string()])),
         }
     } else {
@@ -160,11 +150,6 @@ pub(super) fn get_base_model() -> BaseModel {
             traditional: Box::new(["我愛你".into()]),
             simplified: Box::new(["我爱你".into()]),
             english: Box::new(["I love you".into()]),
-            description: None,
-            tones: None,
-            type_: None,
-            english_synonym: Some(Box::new(["I adore you".to_string()])),
-            chinese_synonym: Some(Box::new(["我喜欢你".to_string()])),
             notes: Some(Box::new(["This is a very common phrase.".to_string()])),
         }
     }

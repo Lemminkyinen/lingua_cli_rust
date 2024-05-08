@@ -1,8 +1,8 @@
+use super::utils::string_utils::{match_tone, normalize_char, normalize_word};
+use crate::utils::get_traditional_pinyin;
 use console::style;
 use rand::random;
 use serde::{Deserialize, Serialize};
-
-use super::file_io::get_traditional_pinyin;
 
 #[derive(Serialize, Deserialize)]
 pub(super) struct BaseModel {
@@ -27,20 +27,23 @@ impl BaseModel {
     }
 
     fn pinyin_alphabet(&self) -> Vec<String> {
+        self.pinyin().iter().map(normalize_word).collect()
+    }
+
+    fn tones(&self) -> Vec<String> {
         self.pinyin()
             .iter()
             .map(|w| {
-                w.chars()
-                    .map(|c| match c {
-                        'ā' | 'á' | 'ǎ' | 'à' => 'a',
-                        'ē' | 'é' | 'ě' | 'è' => 'e',
-                        'ī' | 'í' | 'ǐ' | 'ì' => 'i',
-                        'ō' | 'ó' | 'ǒ' | 'ò' => 'o',
-                        'ū' | 'ú' | 'ǔ' | 'ù' => 'u',
-                        'ǖ' | 'ǘ' | 'ǚ' | 'ǜ' | 'ü' => 'u',
-                        _ => c,
-                    })
-                    .collect()
+                let mut new = String::new();
+                w.chars().into_iter().for_each(|c| {
+                    let tone = match_tone(c);
+                    let tone = match tone {
+                        1 | 2 | 3 | 4 => tone.to_string(),
+                        _ => "".to_string(),
+                    };
+                    new.push_str(&format!("{}{} ", normalize_char(c), tone));
+                });
+                new
             })
             .collect()
     }

@@ -1,7 +1,6 @@
 use super::models::{BaseModel, DictObject};
 use super::DICTIONARY;
 use anyhow::Error;
-use rayon::prelude::*;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str, to_string};
 use std::fs::File;
@@ -54,13 +53,6 @@ pub(super) fn read_compressed_dict() -> Result<Box<[DictObject]>, Error> {
 pub(super) fn read_phrases() -> Result<Box<[BaseModel]>, Error> {
     let file_path = "files/phrases.json";
     load_from_file(file_path)
-}
-
-pub(super) fn get_traditional_pinyin(c: char) -> Option<String> {
-    DICTIONARY
-        .par_iter()
-        .find_any(|d| d.traditional == c.to_string().into())
-        .map(|d| d.pinyin.clone().into())
 }
 
 fn _compress_dict() -> () {

@@ -1,6 +1,4 @@
-use super::DICTIONARY;
 use console::Term;
-use rayon::prelude::*;
 use std::{fmt::Display, io::Write};
 
 // Step 1: Define the trait
@@ -26,14 +24,7 @@ impl StyledWrite for Term {
     }
 }
 
-pub(super) fn get_traditional_pinyin(c: char) -> Option<String> {
-    DICTIONARY
-        .par_iter()
-        .find_any(|d| d.traditional == c.to_string().into())
-        .map(|d| d.pinyin.clone().into())
-}
 pub(super) mod string_utils {
-
     pub(crate) fn match_tone(c: char) -> u8 {
         match c {
             'ā' | 'ē' | 'ī' | 'ō' | 'ū' => 1,
@@ -58,5 +49,39 @@ pub(super) mod string_utils {
 
     pub(crate) fn normalize_word<S: AsRef<str>>(pinyin: S) -> String {
         pinyin.as_ref().chars().map(normalize_char).collect()
+    }
+}
+
+// If word/phrase/sentence uses Chinese characters that do not have any tones
+// then use Google translate to get the audio pronunciation
+// https://translate.google.com/translate_tts?ie=UTF-8&q=了tl=zh-TW&client=tw-ob
+
+// tests
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_match_tone() {
+        assert_eq!(string_utils::match_tone('ā'), 1);
+        assert_eq!(string_utils::match_tone('á'), 2);
+        assert_eq!(string_utils::match_tone('ǎ'), 3);
+        assert_eq!(string_utils::match_tone('à'), 4);
+        assert_eq!(string_utils::match_tone('a'), 5);
+    }
+
+    #[test]
+    fn test_normalize_char() {
+        assert_eq!(string_utils::normalize_char('ā'), 'a');
+        assert_eq!(string_utils::normalize_char('á'), 'a');
+        assert_eq!(string_utils::normalize_char('ǎ'), 'a');
+        assert_eq!(string_utils::normalize_char('à'), 'a');
+        assert_eq!(string_utils::normalize_char('a'), 'a');
+    }
+
+    #[test]
+    fn test_normalize_word() {
+        assert_eq!(string_utils::normalize_word("āáǎàa"), "aaaaa");
     }
 }

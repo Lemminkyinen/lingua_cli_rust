@@ -1,5 +1,5 @@
 use super::utils::string_utils::{match_tone, normalize_char, normalize_word};
-use crate::utils::get_traditional_pinyin;
+use crate::file_io::get_pinyin_from_compressed_json;
 use console::style;
 use rand::random;
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ impl BaseModel {
             .iter()
             .map(|w| {
                 w.chars()
-                    .filter_map(get_traditional_pinyin)
+                    .filter_map(get_pinyin_from_compressed_json)
                     .collect::<Vec<String>>()
                     .join(" ")
             })
@@ -33,17 +33,25 @@ impl BaseModel {
     fn tones(&self) -> Vec<String> {
         self.pinyin()
             .iter()
-            .map(|w| {
-                let mut new = String::new();
-                w.chars().into_iter().for_each(|c| {
-                    let tone = match_tone(c);
-                    let tone = match tone {
-                        1 | 2 | 3 | 4 => tone.to_string(),
-                        _ => "".to_string(),
-                    };
-                    new.push_str(&format!("{}{} ", normalize_char(c), tone));
-                });
-                new
+            .map(|sentence| {
+                let words = sentence.split_whitespace();
+                let new_words: Vec<String> = words
+                    .into_iter()
+                    .map(|w| {
+                        let mut tone = String::new();
+                        let mut new_word = String::new();
+                        w.chars().into_iter().for_each(|c| {
+                            let tone_ = match_tone(c);
+                            if [1, 2, 3, 4].contains(&tone_) {
+                                tone = tone_.to_string();
+                            }
+                            new_word.push(normalize_char(c));
+                        });
+                        new_word.push_str(&tone);
+                        new_word
+                    })
+                    .collect();
+                new_words.join(" ")
             })
             .collect()
     }
@@ -158,10 +166,33 @@ pub(super) fn get_base_model() -> BaseModel {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub(super) struct DictObject {
     pub(super) traditional: Box<str>,
     pub(super) simplified: Box<str>,
     pub(super) english: Box<str>,
     pub(super) pinyin: Box<str>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn get_base_model() -> BaseModel {
+        BaseModel {
+            traditional: Box::new(["你好".into(), "我愛你".into()]),
+            simplified: Box::new(["你好".into(), "我爱你".into()]),
+            english: Box::new(["hello".into(), "I love you".into()]),
+            notes: Some(Box::new(["This is a very common greeting.".to_string()])),
+        }
+    }
+
+    #[test]
+    fn test_base_model_tones() {
+        let model = get_base_model();
+        assert_eq!(
+            model.tones(),
+            vec!["ni3 hao3".to_string(), "wo3 ai4 ni3".to_string()]
+        );
+    }
 }

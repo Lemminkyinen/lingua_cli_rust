@@ -1,15 +1,15 @@
-use super::models::{BaseModel, DictObject};
+use super::models::{BaseModel, BaseModelDto, DictObject, ToBaseModel};
 use anyhow::{anyhow, Error};
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::{from_str, to_string, to_vec, Deserializer};
+use serde_json::{from_str, to_string, Deserializer};
 use std::fs::File;
 use std::io::{self, BufReader, Read, Write};
 use tar::{Archive, Builder};
 
-pub(crate) fn get_audio_file_from_compressed_archive(file_name: &str) -> Vec<u8> {
+pub fn get_audio_file_from_compressed_archive(file_name: &str) -> Vec<u8> {
     let file = File::open("files/tone_archive.tar.zlib").unwrap();
     let decoder = ZlibDecoder::new(file);
     let mut archive = Archive::new(decoder);
@@ -25,12 +25,8 @@ pub(crate) fn get_audio_file_from_compressed_archive(file_name: &str) -> Vec<u8>
     Vec::new()
 }
 
-pub(crate) fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
-    let file = File::open("files/dictionary.json.zlib").unwrap();
-    let decoder = ZlibDecoder::new(file);
-    let reader = BufReader::new(decoder);
-
-    pub fn iter_json_array<T: DeserializeOwned, R: Read>(
+pub fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
+    fn iter_json_array<T: DeserializeOwned, R: Read>(
         mut reader: R,
     ) -> impl Iterator<Item = Result<T, Error>> {
         fn read_skipping_ws(mut reader: impl Read) -> io::Result<u8> {
@@ -85,13 +81,17 @@ pub(crate) fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
         std::iter::from_fn(move || yield_next_obj(&mut reader, &mut at_start).transpose())
     }
 
+    let file = File::open("files/dictionary.json.zlib").unwrap();
+    let decoder = ZlibDecoder::new(file);
+    let reader = BufReader::new(decoder);
+
     for value in iter_json_array::<DictObject, _>(reader) {
         match value {
             Ok(v) => {
                 if v.traditional != c.to_string().into() {
                     continue;
                 }
-                return Some(v.pinyin.clone().into());
+                return Some(v.pinyin.into());
             }
             Err(e) => {
                 log::error!("Error: {}", e);
@@ -101,11 +101,41 @@ pub(crate) fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
     None
 }
 
-#[cfg(not(feature = "ignore_tools_arcive"))]
-pub(crate) mod tools_archive {
-    use super::*;
+pub fn load_from_file_mut<T>(file_path: &str) -> Result<Vec<T>, Error>
+where
+    T: DeserializeOwned,
+{
+    let mut file = File::open(file_path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    let models: Vec<T> = from_str(&contents)?;
+    Ok(models)
+}
 
-    pub(crate) fn _save_to_file<U, T>(models: T, file_path: &str) -> Result<(), Error>
+pub fn load_from_file<T>(file_path: &str) -> Result<Box<[T]>, Error>
+where
+    T: DeserializeOwned,
+{
+    Ok(load_from_file_mut(file_path)?.into_boxed_slice())
+}
+
+pub fn read_phrases() -> Result<Box<[BaseModel]>, Error> {
+    let file_path = "files/phrases.json";
+    let values = load_from_file::<BaseModelDto>(file_path)?;
+    Ok(values
+        .iter()
+        .map(ToBaseModel::to_base_model)
+        .collect::<Vec<_>>()
+        .into_boxed_slice())
+}
+#[cfg(not(feature = "ignore_tools_arcive"))]
+pub mod tools_archive {
+    use super::{
+        from_str, load_from_file, to_string, Archive, Builder, Compression, DictObject, Error,
+        File, Read, Serialize, Write, ZlibEncoder,
+    };
+
+    pub fn _save_to_file<U, T>(models: T, file_path: &str) -> Result<(), Error>
     where
         U: Serialize,
         T: AsRef<[U]>,
@@ -116,30 +146,12 @@ pub(crate) mod tools_archive {
         Ok(())
     }
 
-    pub(crate) fn _load_from_file_mut<T>(file_path: &str) -> Result<Vec<T>, Error>
-    where
-        T: DeserializeOwned,
-    {
-        let mut file = File::open(file_path)?;
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)?;
-        let models: Vec<T> = from_str(&contents)?;
-        Ok(models)
-    }
-
-    pub(crate) fn _load_from_file<T>(file_path: &str) -> Result<Box<[T]>, Error>
-    where
-        T: DeserializeOwned,
-    {
-        Ok(_load_from_file_mut(file_path)?.into_boxed_slice())
-    }
-
     pub(super) fn _read_dict() -> Result<Box<[DictObject]>, Error> {
         let file_path = "files/dictionary.json";
-        _load_from_file(file_path)
+        load_from_file(file_path)
     }
 
-    pub(crate) fn _read_compressed_dict() -> Result<Box<[DictObject]>, Error> {
+    pub fn _read_compressed_dict() -> Result<Box<[DictObject]>, Error> {
         let file_path = "files/dictionary.json.zlib";
         let file = File::open(file_path)?;
         let mut decoder = flate2::read::ZlibDecoder::new(file);
@@ -149,12 +161,7 @@ pub(crate) mod tools_archive {
         Ok(models.into_boxed_slice())
     }
 
-    pub(super) fn _read_phrases() -> Result<Box<[BaseModel]>, Error> {
-        let file_path = "files/phrases.json";
-        _load_from_file(file_path)
-    }
-
-    pub(crate) fn _make_tar_archive() {
+    pub fn _make_tar_archive() {
         let file = File::create("files/tone_archive.tar").unwrap();
         let mut archive = Builder::new(file);
 
@@ -169,7 +176,7 @@ pub(crate) mod tools_archive {
         archive.finish().unwrap();
     }
 
-    pub(crate) fn _compress_tar_archive() {
+    pub fn _compress_tar_archive() {
         let mut file = File::open("files/tone_archive.tar").unwrap();
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer).unwrap();
@@ -180,7 +187,7 @@ pub(crate) mod tools_archive {
         std::fs::write("files/tone_archive.tar.zlib", compressed_bytes).unwrap();
     }
 
-    pub(crate) fn _make_compressed_tar_archive() {
+    pub fn _make_compressed_tar_archive() {
         let file = File::create("files/tone_archive.tar.zlib").unwrap();
         let encoder = ZlibEncoder::new(file, Compression::best());
         let mut archive = Builder::new(encoder);
@@ -195,7 +202,7 @@ pub(crate) mod tools_archive {
         }
     }
 
-    pub(crate) fn _decompress_tar_archive() -> () {
+    pub fn _decompress_tar_archive() {
         use flate2::read::ZlibDecoder;
         use std::fs::File;
         use std::io::prelude::*;
@@ -210,7 +217,7 @@ pub(crate) mod tools_archive {
         std::fs::write("files/tone_archive.tar", decompressed_bytes).unwrap();
     }
 
-    pub(crate) fn _read_from_archive(file_name: &str) -> Vec<u8> {
+    pub fn _read_from_archive(file_name: &str) -> Vec<u8> {
         let file = File::open("files/tone_archive.tar").unwrap();
         let mut archive = Archive::new(file);
         for file in archive.entries().unwrap() {

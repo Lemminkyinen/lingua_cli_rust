@@ -26,5 +26,89 @@
         "notes": [
             "This is a very common phrase."
         ]
+    },
+    {
+        "traditional": [
+            "謝謝"
+        ],
+        "simplified": [
+            "谢谢"
+        ],
+        "english": [
+            "thank you"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
+    },
+    {
+        "traditional": [
+            "對不起"
+        ],
+        "simplified": [
+            "对不起"
+        ],
+        "english": [
+            "sorry", "excuse me"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
+    },
+    {
+        "traditional": [
+            "再見"
+        ],
+        "simplified": [
+            "再见"
+        ],
+        "english": [
+            "goodbye"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
+    },
+    {
+        "traditional": [
+            "請"
+        ],
+        "simplified": [
+            "请"
+        ],
+        "english": [
+            "please"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
+    },
+    {
+        "traditional": [
+            "不客氣"
+        ],
+        "simplified": [
+            "不客气"
+        ],
+        "english": [
+            "you're welcome"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
+    },
+    {
+        "traditional": [
+            "幫助"
+        ],
+        "simplified": [
+            "帮助"
+        ],
+        "english": [
+            "help"
+        ],
+        "notes": [
+            "This is a very common phrase."
+        ]
     }
 ]

@@ -1,3 +1,5 @@
+#![warn(clippy::perf, clippy::pedantic, clippy::nursery)]
+
 mod file_io;
 mod models;
 mod utils;
@@ -6,8 +8,22 @@ mod words;
 use anyhow::Error;
 use console::style;
 use console::Term;
+use lazy_static::lazy_static;
+use models::BaseModel;
 use std::io::Write;
 use words::Words;
+
+lazy_static! {
+    static ref PHRASES: Box<[BaseModel]> = {
+        match file_io::read_phrases() {
+            Ok(phrases) => phrases,
+            Err(e) => {
+                log::error!("Error reading phrases: {}", e);
+                std::process::exit(1);
+            }
+        }
+    };
+}
 
 fn start_text() -> String {
     let welcome = style("Welcome to LinguaCLI!\n\n").bold();
@@ -20,11 +36,10 @@ fn start_text() -> String {
     )
     .cyan();
     format!(
-        "{}\
+        "{welcome}\
         Please select what mode you would like to play:\n\
-        {}\
+        {options}\
         Press Ctrl + C to exit\n\n> ",
-        welcome, options,
     )
 }
 
@@ -61,15 +76,16 @@ impl GameMode {
 }
 
 fn main() -> Result<(), Error> {
+    dotenv::dotenv().ok();
     env_logger::init();
 
     let mut terminal = Term::stdout();
-    terminal.write(start_text().as_bytes())?;
+    terminal.write_all(start_text().as_bytes())?;
 
     '_main: loop {
         let input = terminal.read_line()?;
         let Some(game_mode) = GameMode::from_str(&input) else {
-            terminal.write(invalid_selection().as_bytes())?;
+            terminal.write_all(invalid_selection().as_bytes())?;
             continue '_main;
         };
 
@@ -79,19 +95,19 @@ fn main() -> Result<(), Error> {
             }
             GameMode::Phrases => {
                 terminal.write_line(&not_implemented_yet())?;
-                terminal.write(invalid_selection().as_bytes())?;
+                terminal.write_all(invalid_selection().as_bytes())?;
             }
             GameMode::Sentences => {
                 terminal.write_line(&not_implemented_yet())?;
-                terminal.write(invalid_selection().as_bytes())?;
+                terminal.write_all(invalid_selection().as_bytes())?;
             }
             GameMode::Tones => {
                 terminal.write_line(&not_implemented_yet())?;
-                terminal.write(invalid_selection().as_bytes())?;
+                terminal.write_all(invalid_selection().as_bytes())?;
             }
             GameMode::Random => {
                 terminal.write_line(&not_implemented_yet())?;
-                terminal.write(invalid_selection().as_bytes())?;
+                terminal.write_all(invalid_selection().as_bytes())?;
             }
         }
     }

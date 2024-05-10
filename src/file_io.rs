@@ -45,17 +45,23 @@ pub fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
 
         fn deserialize_single<T: DeserializeOwned, R: Read>(reader: R) -> Result<T, Error> {
             let next_obj = Deserializer::from_reader(reader).into_iter::<T>().next();
-            match next_obj {
-                Some(result) => result.map_err(Into::into),
-                None => Err(invalid_data("premature EOF")),
-            }
+            next_obj.map_or_else(
+                || Err(invalid_data("premature EOF")),
+                |result| result.map_err(Into::into),
+            )
         }
 
         fn yield_next_obj<T: DeserializeOwned, R: Read>(
             mut reader: R,
             at_start: &mut bool,
         ) -> Result<Option<T>, Error> {
-            if !*at_start {
+            if *at_start {
+                match read_skipping_ws(&mut reader)? {
+                    b',' => deserialize_single(reader).map(Some),
+                    b']' => Ok(None),
+                    _ => Err(invalid_data("`,` or `]` not found")),
+                }
+            } else {
                 *at_start = true;
                 if read_skipping_ws(&mut reader)? == b'[' {
                     // read the next char to see if the array is empty
@@ -67,12 +73,6 @@ pub fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
                     }
                 } else {
                     Err(invalid_data("`[` not found"))
-                }
-            } else {
-                match read_skipping_ws(&mut reader)? {
-                    b',' => deserialize_single(reader).map(Some),
-                    b']' => Ok(None),
-                    _ => Err(invalid_data("`,` or `]` not found")),
                 }
             }
         }

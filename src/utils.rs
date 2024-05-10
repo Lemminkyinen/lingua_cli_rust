@@ -1,4 +1,4 @@
-use crate::{models::BaseModel, PHRASES};
+use super::{models::BaseModel, PHRASES};
 use console::Term;
 use rand::random;
 use std::{fmt::Display, io::Write};

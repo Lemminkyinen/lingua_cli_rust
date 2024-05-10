@@ -1,11 +1,9 @@
-use std::io::{BufReader, Cursor};
-
+use super::file_io::{get_audio_file_from_compressed_archive, get_pinyin_from_compressed_json};
 use super::utils::string::{match_tone, normalize_char, normalize_word};
-use crate::file_io::{get_audio_file_from_compressed_archive, get_pinyin_from_compressed_json};
-use anyhow::Error;
 use console::style;
 use rand::random;
 use serde::{Deserialize, Serialize};
+use std::io::{BufReader, Cursor};
 
 #[derive(Serialize, Deserialize)]
 pub struct BaseModelDto {
@@ -101,7 +99,7 @@ impl BaseModel {
                     .map(|w| {
                         let mut tone = String::new();
                         let mut new_word = String::new();
-                        w.chars().into_iter().for_each(|c| {
+                        w.chars().for_each(|c| {
                             let tone_ = match_tone(c);
                             if [1, 2, 3, 4].contains(&tone_) {
                                 tone = tone_.to_string();
@@ -188,13 +186,10 @@ impl BaseModel {
     }
 
     pub(super) fn handle_english_response(&mut self, pinyin_res: &str) -> String {
-        let txt = if self.pinyin_alphabet_trimmed().contains(
-            &pinyin_res
-                .trim()
-                .to_lowercase()
-                .replace(" ", "")
-                .to_string(),
-        ) {
+        let txt = if self
+            .pinyin_alphabet_trimmed()
+            .contains(&pinyin_res.trim().to_lowercase().replace(' ', ""))
+        {
             style("Correct! Well done!").green()
         } else {
             style("Wrong!").red()
@@ -237,27 +232,31 @@ pub enum Voice {
     Google,
 }
 impl Voice {
-    pub fn random() -> Voice {
+    pub fn random() -> Self {
         match random::<u8>() % 6 {
-            0 => Voice::MV1,
-            1 => Voice::MV2,
-            2 => Voice::MV3,
-            3 => Voice::FV1,
-            4 => Voice::FV2,
-            _ => Voice::FV3,
+            0 => Self::MV1,
+            1 => Self::MV2,
+            2 => Self::MV3,
+            3 => Self::FV1,
+            4 => Self::FV2,
+            _ => Self::FV3,
         }
     }
+}
 
-    pub fn to_string(&self) -> String {
-        match self {
-            Voice::MV1 => "MV1".to_string(),
-            Voice::MV2 => "MV2".to_string(),
-            Voice::MV3 => "MV3".to_string(),
-            Voice::FV1 => "FV1".to_string(),
-            Voice::FV2 => "FV2".to_string(),
-            Voice::FV3 => "FV3".to_string(),
-            Voice::Google => "Google".to_string(),
+impl std::fmt::Display for Voice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            Self::MV1 => "MV1",
+            Self::MV2 => "MV2",
+            Self::MV3 => "MV3",
+            Self::FV1 => "FV1",
+            Self::FV2 => "FV2",
+            Self::FV3 => "FV3",
+            Self::Google => "Google",
         }
+        .to_string();
+        write!(f, "{str}")
     }
 }
 

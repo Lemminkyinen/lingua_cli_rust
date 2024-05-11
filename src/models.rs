@@ -13,7 +13,7 @@ pub struct BaseModelDto {
     // extra
     pub(super) notes: Option<Box<[String]>>,
 }
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct BaseModel {
     pub(super) traditional: Box<[Box<str>]>,
     pub(super) simplified: Box<[Box<str>]>,
@@ -62,7 +62,6 @@ impl BaseModel {
     ///
     /// Uses cached values if already fetched.
     pub fn pinyin(&mut self) -> Vec<String> {
-        let time = std::time::Instant::now();
         let ret;
         if self.pinyin_fetched {
             ret = self.pinyin.as_ref().unwrap().clone();
@@ -80,8 +79,6 @@ impl BaseModel {
             self.pinyin = Some(ret.clone());
             self.pinyin_fetched = true;
         }
-
-        log::info!("Elapsed time for fetching pinyins: {:?}", time.elapsed());
         ret
     }
 
@@ -260,6 +257,7 @@ impl std::fmt::Display for Voice {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Pronouncation {
     bytes: Vec<Vec<Vec<u8>>>,
 }

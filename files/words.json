@@ -1,0 +1,62 @@
+[
+    {
+        "traditional": ["好了"],
+        "simplified": ["好了"],
+        "english": ["okay"],
+        "notes": null
+    },
+    {
+        "traditional": ["是"],
+        "simplified": ["是"],
+        "english": ["is"],
+        "notes": null
+    },
+    {
+        "traditional": ["有"],
+        "simplified": ["有"],
+        "english": ["have"],
+        "notes": null
+    },
+    {
+        "traditional": ["不"],
+        "simplified": ["不"],
+        "english": ["not"],
+        "notes": null
+    },
+    {
+        "traditional": ["了"],
+        "simplified": ["了"],
+        "english": ["already"],
+        "notes": null
+    },
+    {
+        "traditional": ["和"],
+        "simplified": ["和"],
+        "english": ["and"],
+        "notes": null
+    },
+    {
+        "traditional": ["的"],
+        "simplified": ["的"],
+        "english": ["of"],
+        "notes": null
+    },
+    {
+        "traditional": ["這"],
+        "simplified": ["这"],
+        "english": ["this"],
+        "notes": null
+    },
+    {
+        "traditional": ["一"],
+        "simplified": ["一"],
+        "english": ["one"],
+        "notes": null
+    },
+    {
+        "traditional": ["個"],
+        "simplified": ["个"],
+        "english": ["a", "an"],
+        "notes": null
+    }
+]

@@ -119,9 +119,8 @@ where
     Ok(load_from_file_mut(file_path)?.into_boxed_slice())
 }
 
-pub fn read_phrases() -> Result<Box<[BaseModel]>, Error> {
-    let file_path = "files/phrases.json";
-    let values = load_from_file::<BaseModelDto>(file_path)?;
+pub fn read_json(path: &str) -> Result<Box<[BaseModel]>, Error> {
+    let values = load_from_file::<BaseModelDto>(path)?;
     Ok(values
         .iter()
         .map(ToBaseModel::to_base_model)

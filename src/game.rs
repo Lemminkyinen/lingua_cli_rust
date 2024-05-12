@@ -1,5 +1,5 @@
 use super::models::{BaseModel, Pronouncation, Voice};
-use super::utils::{get_random_word, StyledWrite};
+use super::utils::{get_random_base_model, StyledWrite};
 use super::PHRASES;
 use anyhow::Error;
 use console::Term;
@@ -8,42 +8,62 @@ use rand::random;
 use std::collections::VecDeque;
 use std::{cmp, thread};
 
-pub struct Words {}
+pub enum Mode {
+    Words,
+    Phrases,
+    Sentences,
+    Tones,
+    Random,
+}
 
-impl Words {
-    fn start_basemodel_channel() -> Receiver<(BaseModel, Pronouncation)> {
+impl Mode {
+    pub fn get_json_file(&self) -> &'static [BaseModel] {
+        match self {
+            Mode::Words => &super::WORDS,
+            Mode::Phrases => &super::PHRASES,
+            Mode::Sentences => &super::SENTENCES,
+            Mode::Tones => &super::PHRASES,
+            Mode::Random => &super::PHRASES,
+        }
+    }
+}
+
+pub struct Language {}
+
+impl Language {
+    fn start_basemodel_channel(mode: Mode) -> Receiver<(BaseModel, Pronouncation)> {
         let channel_max_length = cmp::min(10, PHRASES.len());
         let (sender, receiver) = bounded(channel_max_length);
 
         thread::spawn(move || {
-            let mut words: VecDeque<BaseModel> = VecDeque::with_capacity(channel_max_length);
+            let mut base_models: VecDeque<BaseModel> = VecDeque::with_capacity(channel_max_length);
             loop {
-                let mut word = get_random_word(true);
+                let mut base_model = get_random_base_model(&mode, true);
 
                 while sender.is_full() {
                     thread::sleep(std::time::Duration::from_millis(1200));
                 }
 
-                if sender.len() < words.len() {
-                    let pop_count = words.len() - sender.len();
+                if sender.len() < base_models.len() {
+                    let pop_count = base_models.len() - sender.len();
                     for _ in 0..pop_count {
-                        words.pop_front();
+                        base_models.pop_front();
                     }
                 }
 
-                if !sender.is_full() && !words.contains(&word) {
+                if !sender.is_full() && !base_models.contains(&base_model) {
                     let voice = Voice::random();
-                    let tone: Pronouncation = Pronouncation::create_from(&mut word, &voice);
-                    sender.send((word.clone(), tone)).unwrap();
-                    words.push_back(word);
+                    let tone: Pronouncation = Pronouncation::create_from(&mut base_model, &voice);
+                    sender.send((base_model.clone(), tone)).unwrap();
+                    base_models.push_back(base_model);
                 }
             }
         });
         receiver
     }
 
-    pub(super) fn run(terminal: &mut Term) -> Result<(), Error> {
-        let receiver = Self::start_basemodel_channel();
+    pub(super) fn run(terminal: &mut Term, mode: Mode) -> Result<(), Error> {
+        let receiver = Self::start_basemodel_channel(mode);
         terminal.write_line("Words selected!\n")?;
         let mut last_round_chinese: bool;
 

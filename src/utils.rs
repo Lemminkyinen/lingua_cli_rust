@@ -1,4 +1,4 @@
-use super::{models::BaseModel, PHRASES};
+use super::{game::Mode, models::BaseModel};
 use console::Term;
 use rand::random;
 use std::{fmt::Display, io::Write};
@@ -26,8 +26,9 @@ impl StyledWrite for Term {
     }
 }
 
-pub fn get_random_word(load_attributes: bool) -> BaseModel {
-    let mut base_model = PHRASES[random::<usize>() % PHRASES.len()].clone();
+pub fn get_random_base_model(mode: &Mode, load_attributes: bool) -> BaseModel {
+    let file = mode.get_json_file();
+    let mut base_model = file[random::<usize>() % file.len()].clone();
     if load_attributes {
         base_model.pinyin();
     }

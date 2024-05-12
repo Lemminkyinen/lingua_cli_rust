@@ -1,22 +1,40 @@
 #![warn(clippy::perf, clippy::pedantic, clippy::nursery)]
 
 mod file_io;
+mod game;
 mod models;
 mod utils;
-mod words;
 
 use anyhow::Error;
 use console::style;
 use console::Term;
+use game::Language;
 use lazy_static::lazy_static;
 use models::BaseModel;
 use std::env;
 use std::io::Write;
-use words::Words;
 
 lazy_static! {
+    static ref WORDS: Box<[BaseModel]> = {
+        match file_io::read_json("files/words.json") {
+            Ok(phrases) => phrases,
+            Err(e) => {
+                log::error!("Error reading phrases: {}", e);
+                std::process::exit(1);
+            }
+        }
+    };
     static ref PHRASES: Box<[BaseModel]> = {
-        match file_io::read_phrases() {
+        match file_io::read_json("files/phrases.json") {
+            Ok(phrases) => phrases,
+            Err(e) => {
+                log::error!("Error reading phrases: {}", e);
+                std::process::exit(1);
+            }
+        }
+    };
+    static ref SENTENCES: Box<[BaseModel]> = {
+        match file_io::read_json("files/sentences.json") {
             Ok(phrases) => phrases,
             Err(e) => {
                 log::error!("Error reading phrases: {}", e);
@@ -78,8 +96,8 @@ impl GameMode {
 
 fn main() -> Result<(), Error> {
     if let (Ok(term), Ok(msystem)) = (env::var("TERM"), env::var("MSYSTEM")) {
-        println!("TERM: {term}, MSYSTEM: {msystem:?}");
         if term == "xterm" && msystem == "MINGW64" {
+            println!("TERM: {term}, MSYSTEM: {msystem}");
             println!(
                 "This program is not compatible with Git Bash. Please use a different terminal."
             );
@@ -102,15 +120,13 @@ fn main() -> Result<(), Error> {
 
         match game_mode {
             GameMode::Words => {
-                Words::run(&mut terminal)?;
+                Language::run(&mut terminal, game::Mode::Words)?;
             }
             GameMode::Phrases => {
-                terminal.write_line(&not_implemented_yet())?;
-                terminal.write_all(invalid_selection().as_bytes())?;
+                Language::run(&mut terminal, game::Mode::Phrases)?;
             }
             GameMode::Sentences => {
-                terminal.write_line(&not_implemented_yet())?;
-                terminal.write_all(invalid_selection().as_bytes())?;
+                Language::run(&mut terminal, game::Mode::Sentences)?;
             }
             GameMode::Tones => {
                 terminal.write_line(&not_implemented_yet())?;

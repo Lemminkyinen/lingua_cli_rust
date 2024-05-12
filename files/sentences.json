@@ -1,0 +1,62 @@
+[
+    {
+        "traditional": ["我喜歡吃飯。"],
+        "simplified": ["我喜欢吃饭。"],
+        "english": ["I like to eat."],
+        "notes": null
+    },
+    {
+        "traditional": ["今天天氣很好。"],
+        "simplified": ["今天天气很好。"],
+        "english": ["The weather is very nice today."],
+        "notes": null
+    },
+    {
+        "traditional": ["你好嗎？"],
+        "simplified": ["你好吗？"],
+        "english": ["How are you?"],
+        "notes": null
+    },
+    {
+        "traditional": ["我愛你。"],
+        "simplified": ["我爱你。"],
+        "english": ["I love you."],
+        "notes": null
+    },
+    {
+        "traditional": ["這是什麼？"],
+        "simplified": ["这是什么？"],
+        "english": ["What is this?"],
+        "notes": null
+    },
+    {
+        "traditional": ["謝謝你。"],
+        "simplified": ["谢谢你。"],
+        "english": ["Thank you."],
+        "notes": null
+    },
+    {
+        "traditional": ["我想要一杯水。"],
+        "simplified": ["我想要一杯水。"],
+        "english": ["I would like a glass of water."],
+        "notes": null
+    },
+    {
+        "traditional": ["請坐。"],
+        "simplified": ["请坐。"],
+        "english": ["Please sit down."],
+        "notes": null
+    },
+    {
+        "traditional": ["你叫什麼名字？"],
+        "simplified": ["你叫什么名字？"],
+        "english": ["What is your name?"],
+        "notes": null
+    },
+    {
+        "traditional": ["我不明白。"],
+        "simplified": ["我不明白。"],
+        "english": ["I don't understand."],
+        "notes": null
+    }
+]

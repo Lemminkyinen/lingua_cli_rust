@@ -1,7 +1,8 @@
 use super::file_io::{get_audio_file_from_compressed_archive, get_pinyin_from_compressed_json};
 use super::utils::string::{match_tone, normalize_char, normalize_word};
 use console::style;
-use rand::random;
+use rand::{random, Rng};
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use std::io::{BufReader, Cursor};
 
@@ -72,6 +73,7 @@ impl BaseModel {
                 .map(|w| {
                     w.chars()
                         .filter_map(get_pinyin_from_compressed_json)
+                        .map(|p| p.to_lowercase())
                         .collect::<Vec<String>>()
                         .join(" ")
                 })
@@ -110,6 +112,14 @@ impl BaseModel {
                 new_words.join(" ")
             })
             .collect()
+    }
+
+    pub fn has_normal_tones(&mut self) -> bool {
+        self.tones().iter().any(|sentence| {
+            sentence
+                .split_whitespace()
+                .any(|word| !word.chars().last().unwrap().is_numeric())
+        })
     }
 
     fn styled_pinyin(&mut self) -> String {
@@ -219,6 +229,7 @@ pub fn _get_base_model() -> BaseModel {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum Voice {
     MV1,
     MV2,
@@ -230,14 +241,15 @@ pub enum Voice {
 }
 impl Voice {
     pub fn random() -> Self {
-        match random::<u8>() % 6 {
-            0 => Self::MV1,
-            1 => Self::MV2,
-            2 => Self::MV3,
-            3 => Self::FV1,
-            4 => Self::FV2,
-            _ => Self::FV3,
-        }
+        [
+            Self::MV1,
+            Self::MV2,
+            Self::MV3,
+            Self::FV1,
+            Self::FV2,
+            Self::FV3,
+        ][rand::thread_rng().gen_range(0..6)]
+        .clone()
     }
 }
 
@@ -259,11 +271,12 @@ impl std::fmt::Display for Voice {
 
 #[derive(Debug, Clone)]
 pub struct Pronouncation {
-    bytes: Vec<Vec<Vec<u8>>>,
+    bytes: Option<Vec<Vec<Vec<u8>>>>,
+    google_bytes: Option<Vec<Vec<u8>>>,
 }
 
 impl Pronouncation {
-    pub fn create_from(word: &mut BaseModel, voice: &Voice) -> Self {
+    fn create_from_mp3(word: &mut BaseModel, voice: &Voice) -> Self {
         let tones_str = word.tones();
         let voice_str = voice.to_string();
         let tones = tones_str
@@ -278,19 +291,67 @@ impl Pronouncation {
             })
             .collect::<Vec<Vec<Vec<u8>>>>();
 
-        Self { bytes: tones }
+        Self {
+            bytes: Some(tones),
+            google_bytes: None,
+        }
+    }
+    fn create_from_google_translate(word: &BaseModel) -> Self {
+        // If word/phrase/sentence uses Chinese characters that do not have any tones
+        // then use Google translate to get the audio pronunciation
+        // e.g. le, ma, ge,
+        // https://translate.google.com/translate_tts?ie=UTF-8&q=了&tl=zh-TW&client=tw-ob
+
+        let urls = word.traditional
+            .iter()
+            .map(|word| {
+                format!("https://translate.google.com/translate_tts?ie=UTF-8&q={word}&tl=zh-TW&client=tw-ob")
+            })
+            .collect::<Vec<String>>();
+
+        let results = urls
+            .par_iter()
+            .map(|url| {
+                let response = reqwest::blocking::get(url).unwrap();
+                response.bytes().unwrap().to_vec()
+            })
+            .collect::<Vec<Vec<u8>>>();
+
+        Self {
+            bytes: None,
+            google_bytes: Some(results),
+        }
+    }
+
+    pub fn create_from(word: &mut BaseModel, voice: &Voice) -> Self {
+        if word.has_normal_tones() {
+            return Self::create_from_google_translate(word);
+        }
+        Self::create_from_mp3(word, voice)
     }
 
     pub fn play_all(&self) -> Result<(), Box<dyn std::error::Error>> {
         let (_stream, handle) = rodio::OutputStream::try_default()?;
         let sink = rodio::Sink::try_new(&handle)?;
 
-        for phrase in &self.bytes {
-            for word in phrase {
-                let cursor = Cursor::new(word.clone());
-                let source = rodio::Decoder::new(BufReader::new(cursor))?;
-                sink.append(source);
+        // Play mp3 files
+        if let Some(bytes) = &self.bytes {
+            for phrase in bytes {
+                for word in phrase {
+                    let cursor = Cursor::new(word.clone());
+                    let source = rodio::Decoder::new(BufReader::new(cursor))?;
+                    sink.append(source);
+                }
             }
+            sink.sleep_until_end();
+            return Ok(());
+        }
+
+        // Play google translate audio
+        for phrase in self.google_bytes.as_ref().unwrap() {
+            let cursor = Cursor::new(phrase.clone());
+            let source = rodio::Decoder::new(BufReader::new(cursor))?;
+            sink.append(source);
         }
         sink.sleep_until_end();
         Ok(())
@@ -310,9 +371,9 @@ mod tests {
 
     fn get_base_model() -> BaseModel {
         BaseModel::new(
-            Box::new(["你好".into(), "我愛你".into()]),
-            Box::new(["你好".into(), "我爱你".into()]),
-            Box::new(["hello".into(), "I love you".into()]),
+            Box::new(["你好".into(), "我愛你".into(), "你好了".into()]),
+            Box::new(["你好".into(), "我爱你".into(), "你好了".into()]),
+            Box::new(["hello".into(), "I love you".into(), "hello".into()]),
             Some(Box::new(["This is a very common greeting.".to_string()])),
         )
     }
@@ -322,7 +383,11 @@ mod tests {
         let mut model = get_base_model();
         assert_eq!(
             model.tones(),
-            vec!["ni3 hao3".to_string(), "wo3 ai4 ni3".to_string()]
+            vec![
+                "ni3 hao3".to_string(),
+                "wo3 ai4 ni3".to_string(),
+                "ni3 hao3 le".to_string()
+            ]
         );
     }
 

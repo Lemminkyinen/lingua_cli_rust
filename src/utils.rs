@@ -61,10 +61,6 @@ pub mod string {
     }
 }
 
-// If word/phrase/sentence uses Chinese characters that do not have any tones
-// then use Google translate to get the audio pronunciation
-// https://translate.google.com/translate_tts?ie=UTF-8&q=了tl=zh-TW&client=tw-ob
-
 // tests
 
 #[cfg(test)]

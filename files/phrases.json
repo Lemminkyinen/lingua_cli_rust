@@ -110,5 +110,17 @@
         "notes": [
             "This is a very common phrase."
         ]
+    },
+    {
+        "traditional": [
+            "好了"
+        ],
+        "simplified": [
+            "好了"
+        ],
+        "english": [
+            "okay"
+        ],
+        "notes": null
     }
 ]

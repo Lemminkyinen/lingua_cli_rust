@@ -10,6 +10,7 @@ use console::style;
 use console::Term;
 use lazy_static::lazy_static;
 use models::BaseModel;
+use std::env;
 use std::io::Write;
 use words::Words;
 
@@ -76,6 +77,16 @@ impl GameMode {
 }
 
 fn main() -> Result<(), Error> {
+    if let (Ok(term), Ok(msystem)) = (env::var("TERM"), env::var("MSYSTEM")) {
+        println!("TERM: {term}, MSYSTEM: {msystem:?}");
+        if term == "xterm" && msystem == "MINGW64" {
+            println!(
+                "This program is not compatible with Git Bash. Please use a different terminal."
+            );
+            std::process::exit(0);
+        }
+    }
+
     dotenv::dotenv().ok();
     env_logger::init();
 

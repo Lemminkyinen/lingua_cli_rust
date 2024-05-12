@@ -13,7 +13,7 @@ pub struct BaseModelDto {
     // extra
     pub(super) notes: Option<Box<[String]>>,
 }
-#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]
 pub struct BaseModel {
     pub(super) traditional: Box<[Box<str>]>,
     pub(super) simplified: Box<[Box<str>]>,

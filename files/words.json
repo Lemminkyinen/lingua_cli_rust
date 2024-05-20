@@ -1,62 +1,556 @@
 [
     {
-        "traditional": ["好了"],
-        "simplified": ["好了"],
-        "english": ["okay"],
+        "traditional": [
+            "好了"
+        ],
+        "simplified": [
+            "好了"
+        ],
+        "english": [
+            "okay"
+        ],
         "notes": null
     },
     {
-        "traditional": ["是"],
-        "simplified": ["是"],
-        "english": ["is"],
+        "traditional": [
+            "是"
+        ],
+        "simplified": [
+            "是"
+        ],
+        "english": [
+            "is"
+        ],
         "notes": null
     },
     {
-        "traditional": ["有"],
-        "simplified": ["有"],
-        "english": ["have"],
+        "traditional": [
+            "有"
+        ],
+        "simplified": [
+            "有"
+        ],
+        "english": [
+            "have"
+        ],
         "notes": null
     },
     {
-        "traditional": ["不"],
-        "simplified": ["不"],
-        "english": ["not"],
+        "traditional": [
+            "不"
+        ],
+        "simplified": [
+            "不"
+        ],
+        "english": [
+            "not"
+        ],
         "notes": null
     },
     {
-        "traditional": ["了"],
-        "simplified": ["了"],
-        "english": ["already"],
+        "traditional": [
+            "了"
+        ],
+        "simplified": [
+            "了"
+        ],
+        "english": [
+            "already"
+        ],
         "notes": null
     },
     {
-        "traditional": ["和"],
-        "simplified": ["和"],
-        "english": ["and"],
+        "traditional": [
+            "和"
+        ],
+        "simplified": [
+            "和"
+        ],
+        "english": [
+            "and"
+        ],
         "notes": null
     },
     {
-        "traditional": ["的"],
-        "simplified": ["的"],
-        "english": ["of"],
+        "traditional": [
+            "的"
+        ],
+        "simplified": [
+            "的"
+        ],
+        "english": [
+            "of"
+        ],
         "notes": null
     },
     {
-        "traditional": ["這"],
-        "simplified": ["这"],
-        "english": ["this"],
+        "traditional": [
+            "這"
+        ],
+        "simplified": [
+            "这"
+        ],
+        "english": [
+            "this"
+        ],
         "notes": null
     },
     {
-        "traditional": ["一"],
-        "simplified": ["一"],
-        "english": ["one"],
+        "traditional": [
+            "個"
+        ],
+        "simplified": [
+            "个"
+        ],
+        "english": [
+            "a",
+            "an"
+        ],
         "notes": null
     },
     {
-        "traditional": ["個"],
-        "simplified": ["个"],
-        "english": ["a", "an"],
+        "traditional": [
+            "一"
+        ],
+        "simplified": [
+            "一"
+        ],
+        "english": [
+            "one"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "二"
+        ],
+        "simplified": [
+            "二"
+        ],
+        "english": [
+            "two"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "三"
+        ],
+        "simplified": [
+            "三"
+        ],
+        "english": [
+            "three"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "四"
+        ],
+        "simplified": [
+            "四"
+        ],
+        "english": [
+            "four"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "五"
+        ],
+        "simplified": [
+            "五"
+        ],
+        "english": [
+            "five"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "六"
+        ],
+        "simplified": [
+            "六"
+        ],
+        "english": [
+            "six"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "七"
+        ],
+        "simplified": [
+            "七"
+        ],
+        "english": [
+            "seven"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "八"
+        ],
+        "simplified": [
+            "八"
+        ],
+        "english": [
+            "eight"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "九"
+        ],
+        "simplified": [
+            "九"
+        ],
+        "english": [
+            "nine"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "十"
+        ],
+        "simplified": [
+            "十"
+        ],
+        "english": [
+            "ten"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "早上"
+        ],
+        "simplified": [
+            "早上"
+        ],
+        "english": [
+            "morning time"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "早安"
+        ],
+        "simplified": [
+            "早安"
+        ],
+        "english": [
+            "good morning"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "晚上"
+        ],
+        "simplified": [
+            "晚上"
+        ],
+        "english": [
+            "evening time"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "晚安"
+        ],
+        "simplified": [
+            "晚安"
+        ],
+        "english": [
+            "good night"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "每天"
+        ],
+        "simplified": [
+            "每天"
+        ],
+        "english": [
+            "everyday"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "很多"
+        ],
+        "simplified": [
+            "很多"
+        ],
+        "english": [
+            "many"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "房子"
+        ],
+        "simplified": [
+            "房子"
+        ],
+        "english": [
+            "house"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "車子"
+        ],
+        "simplified": [
+            "車子"
+        ],
+        "english": [
+            "car"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "樹"
+        ],
+        "simplified": [
+            "樹"
+        ],
+        "english": [
+            "tree"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "森林"
+        ],
+        "simplified": [
+            "森林"
+        ],
+        "english": [
+            "forest"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "買"
+        ],
+        "simplified": [
+            "買"
+        ],
+        "english": [
+            "buy"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "牛奶"
+        ],
+        "simplified": [
+            "牛奶"
+        ],
+        "english": [
+            "milk"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "紅茶"
+        ],
+        "simplified": [
+            "紅茶"
+        ],
+        "english": [
+            "black tea"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "珍珠奶茶"
+        ],
+        "simplified": [
+            "珍珠奶茶"
+        ],
+        "english": [
+            "bubble milk tea"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "咖啡"
+        ],
+        "simplified": [
+            "咖啡"
+        ],
+        "english": [
+            "coffee"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "錢"
+        ],
+        "simplified": [
+            "錢"
+        ],
+        "english": [
+            "money"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "家"
+        ],
+        "simplified": [
+            "家"
+        ],
+        "english": [
+            "home"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "了"
+        ],
+        "simplified": [
+            "了"
+        ],
+        "english": [
+            "finished",
+            "completed"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "到"
+        ],
+        "simplified": [
+            "到"
+        ],
+        "english": [
+            "arrived"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "比較"
+        ],
+        "simplified": [
+            "比較"
+        ],
+        "english": [
+            "compare"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "比較喜歡"
+        ],
+        "simplified": [
+            "比較喜歡"
+        ],
+        "english": [
+            "prefer"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "綠"
+        ],
+        "simplified": [
+            "綠"
+        ],
+        "english": [
+            "green"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "紅"
+        ],
+        "simplified": [
+            "紅"
+        ],
+        "english": [
+            "red"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "黑"
+        ],
+        "simplified": [
+            "黑"
+        ],
+        "english": [
+            "black"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "一點點"
+        ],
+        "simplified": [
+            "一點點"
+        ],
+        "english": [
+            "a little bit"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "快"
+        ],
+        "simplified": [
+            "快"
+        ],
+        "english": [
+            "fast"
+        ],
+        "notes": null
+    },
+    {
+        "traditional": [
+            "慢"
+        ],
+        "simplified": [
+            "慢"
+        ],
+        "english": [
+            "slow"
+        ],
         "notes": null
     }
 ]

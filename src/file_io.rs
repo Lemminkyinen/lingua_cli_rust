@@ -160,6 +160,17 @@ pub mod tools_archive {
         Ok(models.into_boxed_slice())
     }
 
+    pub fn _compress_file(path: &str) {
+        let mut file = File::open(path).unwrap();
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer).unwrap();
+
+        let mut encoder = ZlibEncoder::new(Vec::new(), Compression::best());
+        encoder.write_all(&buffer).unwrap();
+        let compressed_bytes = encoder.finish().unwrap();
+        std::fs::write(format!("{path}.zlib"), compressed_bytes).unwrap();
+    }
+
     pub fn _make_tar_archive() {
         let file = File::create("files/tone_archive.tar").unwrap();
         let mut archive = Builder::new(file);

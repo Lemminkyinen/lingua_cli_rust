@@ -71,7 +71,7 @@ impl BaseModel {
             let mut pinyins = self
                 .traditional
                 .iter()
-                .filter_map(get_pinyin_from_compressed_json)
+                .filter_map(|w| get_pinyin_from_compressed_json(w).map(|v| v.to_lowercase()))
                 .peekable();
 
             ret = if pinyins.peek().is_none() {
@@ -80,8 +80,9 @@ impl BaseModel {
                     .iter()
                     .map(|w| {
                         w.chars()
-                            .filter_map(|c| get_pinyin_from_compressed_json(&c))
-                            .map(|p| p.to_lowercase())
+                            .filter_map(|c| {
+                                get_pinyin_from_compressed_json(&c).map(|v| v.to_lowercase())
+                            })
                             .collect::<Vec<String>>()
                             .join(" ")
                     })

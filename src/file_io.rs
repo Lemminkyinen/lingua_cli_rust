@@ -25,7 +25,7 @@ pub fn get_audio_file_from_compressed_archive(file_name: &str) -> Vec<u8> {
     Vec::new()
 }
 
-pub fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
+pub fn get_pinyin_from_compressed_json<T: ToString>(text: &T) -> Option<String> {
     fn iter_json_array<T: DeserializeOwned, R: Read>(
         mut reader: R,
     ) -> impl Iterator<Item = Result<T, Error>> {
@@ -88,7 +88,7 @@ pub fn get_pinyin_from_compressed_json(c: char) -> Option<String> {
     for value in iter_json_array::<DictObject, _>(reader) {
         match value {
             Ok(v) => {
-                if v.traditional != c.to_string().into() {
+                if v.traditional != text.to_string().into() {
                     continue;
                 }
                 return Some(v.pinyin.into());

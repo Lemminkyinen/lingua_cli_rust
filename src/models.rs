@@ -67,17 +67,29 @@ impl BaseModel {
         if self.pinyin_fetched {
             ret = self.pinyin.as_ref().unwrap().clone();
         } else {
-            ret = self
+            // Try to get pinyins for the whole sentence
+            let mut pinyins = self
                 .traditional
                 .iter()
-                .map(|w| {
-                    w.chars()
-                        .filter_map(get_pinyin_from_compressed_json)
-                        .map(|p| p.to_lowercase())
-                        .collect::<Vec<String>>()
-                        .join(" ")
-                })
-                .collect::<Vec<_>>();
+                .filter_map(get_pinyin_from_compressed_json)
+                .peekable();
+
+            ret = if pinyins.peek().is_none() {
+                // If not found, then get pinyins for each individual char
+                self.traditional
+                    .iter()
+                    .map(|w| {
+                        w.chars()
+                            .filter_map(|c| get_pinyin_from_compressed_json(&c))
+                            .map(|p| p.to_lowercase())
+                            .collect::<Vec<String>>()
+                            .join(" ")
+                    })
+                    .collect::<Vec<_>>()
+            } else {
+                pinyins.collect()
+            };
+
             self.pinyin = Some(ret.clone());
             self.pinyin_fetched = true;
         }

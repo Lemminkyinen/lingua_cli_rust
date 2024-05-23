@@ -7,9 +7,9 @@
             "好了"
         ],
         "english": [
-            "okay"
+            "okay", "finished", "done"
         ],
-        "notes": null
+        "notes": ["Is used when you answer to someone e.g. Alright, I already finished."]
     },
     {
         "traditional": [
@@ -55,7 +55,7 @@
             "了"
         ],
         "english": [
-            "already"
+            "already", "finish something"
         ],
         "notes": null
     },
@@ -296,7 +296,7 @@
             "很多"
         ],
         "english": [
-            "many"
+            "many", "a lot", "a lot of"
         ],
         "notes": null
     },
@@ -453,7 +453,7 @@
             "到"
         ],
         "english": [
-            "arrived"
+            "arrived", "arrive"
         ],
         "notes": null
     },
